@@ -1,0 +1,47 @@
+# geany use both C and C++, so advertize C++
+language: cpp
+dist: trusty
+#sudo: required
+compiler:
+  - gcc
+
+git:
+  quiet: true
+
+addons:
+  apt:
+    packages:
+      - libxml++2-dev
+      - libxslt1-dev
+      - libwebkit2gtk-4.0-dev
+      - libofx-dev
+      - xsltproc
+      - libdbi-dev
+      - libdbd-sqlite3
+      - libsecret-1-dev
+ 
+before_script:
+  - export APP=Gnucash
+  - export LOWERAPP=${APP,,}
+  - export APPDIR="$(pwd)/appdir" ; mkdir --parents ${APPDIR} ; find ${APPDIR}
+
+script:
+  #Compile:
+  - bash ./${APP}.compileApp.sh
+  - export VERSION=$(ls gnucash-*.tar.gz | sed -r 's/.*gnucash-(.*).tar.gz/\1/')
+  #Build AppImage:
+  - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+  - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+  - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
+  #- export VERSION=$(git rev-parse --short HEAD) # linuxdeployqt uses this for naming the file
+  - ./linuxdeployqt-continuous-x86_64.AppImage ${APPDIR}/usr/share/applications/*.desktop -appimage
+
+after_success:
+  - find ${APPDIR} -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq
+  - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
+  - bash upload.sh ${APP}*.AppImage*
+  
+branches:
+  except:
+    - # Do not build tags that we create when we upload to GitHub Releases
+    - /^(?i:continuous)/
