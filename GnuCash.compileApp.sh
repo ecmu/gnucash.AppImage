@@ -38,3 +38,92 @@ cd build
 cmake -DWITH_OFX=ON -DWITH_AQBANKING=OFF -DCMAKE_INSTALL_PREFIX="${APPDIR}/usr" ..
 make
 make install
+
+#=== Create AppRun main program
+
+cat << EOF > ${APPDIR}/AppRun
+#!/usr/bin/env bash
+echo "APPDIR = \${APPDIR}"
+echo "APPIMAGE = \${APPIMAGE}"
+echo "ARGV0 = \${ARGV0}"
+
+HERE="$(dirname "$(readlink -f "${0}")")"
+echo "HERE = \${HERE}"
+
+#=======================================================================
+
+APP_STOP_NOW="false"
+
+#APP_HOME="\${ARGV0}.home"
+#echo "APP_HOME = \${APP_HOME}"
+#if [ -d \${APP_HOME} ]; then
+#  echo "  => directory exists : \${APP_HOME}"
+#else
+#  APP_STOP_NOW="true"
+#  if [ -d "\${HERE}/${APP}.home" ]; then
+#    echo "  => link : \${APP_HOME} => \${HERE}/${APP}.home"
+#    ln -s "${APP}.home" "\${APP_HOME}"
+#  else
+#    echo "  => create local home directory"
+#    exec "${ARGV0}" --appimage-portable-home
+#  fi  
+#fi
+
+#APP_CONFIG="\${ARGV0}.config"
+#echo "APP_CONFIG = \${APP_CONFIG}"
+#if [ -d \${APP_CONFIG} ]; then
+#  echo "  => directory exists : \${APP_CONFIG}"
+#else
+#  APP_STOP_NOW="true"
+#  if [ -d "\${HERE}/${APP}.config" ]; then
+#    echo "  => link : \${APP_CONFIG} => \${HERE}/${APP}.config"
+#    ln -s "${APP}.config" "\${APP_CONFIG}"
+#  else
+#    echo "  => create local config directory"
+#    exec "${ARGV0}" --appimage-portable-config
+#  fi  
+#fi
+
+#if [ "\${APP_CONFIG}" == "true" ]; then
+#  echo
+#  echo "=> Relancer l'AppImage pour prendre en compte les nouveaux répertoires HOME et CONFIG..."
+#  echo
+#  exit
+#fi
+
+#=======================================================================
+
+export GNC_DBD_DIR="\${APPDIR}/usr/lib/x86_64-linux-gnu/dbd"
+echo "GNC_DBD_DIR = \${GNC_DBD_DIR}"
+export LD_LIBRARY_PATH="\${APPDIR}/usr/lib/gnucash:\$LD_LIBRARY_PATH"
+echo "LD_LIBRARY_PATH = \${LD_LIBRARY_PATH}"
+export OFX_DTD_PATH="\${APPDIR}/usr/share/libofx6/libofx/dtd"
+echo "OFX_DTD_PATH = \${OFX_DTD_PATH}"
+
+#echo "XDG_CONFIG_HOME = \${XDG_CONFIG_HOME}"
+
+#Traite les arguments spécifiques à cette AppImage
+THIS_APP_ARGV=()
+while [ \$1 ]; do
+  case \$1 in
+    '--help' | '-h' )
+      echo "Usage: \${ARGV0} [OPTIONS]"
+      echo
+      echo 'OPTIONS:'
+      echo '  -h, --help: Show this help screen'
+      echo
+      THIS_APP_ARGV+=(\$1)
+      #exit
+      ;;
+    *)
+      THIS_APP_ARGV+=(\$1)
+      ;;
+  esac
+
+  shift
+done
+
+exec "\${APPDIR}/usr/bin/gnucash" "\${THIS_APP_ARGV}"
+EOF
+
+chmod a+x ${APPDIR}/AppRun
