@@ -102,7 +102,7 @@ APP_STOP_NOW="false"
 
 #=======================================================================
 
-export GNC_DBD_DIR="\${APPDIR}/usr/lib/x86_64-linux-gnu/dbd"
+export GNC_DBD_DIR="\${APPDIR}/usr/lib/dbd"
 export LD_LIBRARY_PATH="\${APPDIR}/usr/lib:\${APPDIR}/usr/lib/gnucash:\$LD_LIBRARY_PATH"
 export OFX_DTD_PATH="\${APPDIR}/usr/share/libofx6/libofx/dtd"
 
