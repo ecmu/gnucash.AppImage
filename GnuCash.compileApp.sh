@@ -39,6 +39,12 @@ cmake -DWITH_OFX=ON -DWITH_AQBANKING=OFF -DCMAKE_INSTALL_PREFIX="${APPDIR}/usr" 
 make
 make install
 
+#=== Copy extra shared libraries that are not copied by linuxdeploy later
+
+echo "=> copy GUILE"
+cp --recursive --verbose /usr/share/guile "${APPDIR}/usr/share"
+cp --recursive --verbose /usr/lib/x86_64-linux-gnu/guile "${APPDIR}/usr/lib"
+
 #=== Create AppRun main program
 
 cat << EOF > ${APPDIR}/AppRun
