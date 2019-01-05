@@ -94,13 +94,14 @@ APP_STOP_NOW="false"
 #=======================================================================
 
 export GNC_DBD_DIR="\${APPDIR}/usr/lib/x86_64-linux-gnu/dbd"
-echo "GNC_DBD_DIR = \${GNC_DBD_DIR}"
-export LD_LIBRARY_PATH="\${APPDIR}/usr/lib/gnucash:\$LD_LIBRARY_PATH"
-echo "LD_LIBRARY_PATH = \${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="\${APPDIR}/usr/lib:\${APPDIR}/usr/lib/gnucash:\$LD_LIBRARY_PATH"
 export OFX_DTD_PATH="\${APPDIR}/usr/share/libofx6/libofx/dtd"
-echo "OFX_DTD_PATH = \${OFX_DTD_PATH}"
 
-#echo "XDG_CONFIG_HOME = \${XDG_CONFIG_HOME}"
+echo "PATH = \${PATH}"
+echo "GNC_DBD_DIR = \${GNC_DBD_DIR}"
+echo "LD_LIBRARY_PATH = \${LD_LIBRARY_PATH}"
+echo "OFX_DTD_PATH = \${OFX_DTD_PATH}"
+echo "XDG_CONFIG_HOME = \${XDG_CONFIG_HOME}"
 
 #Traite les arguments spécifiques à cette AppImage
 THIS_APP_ARGV=()
