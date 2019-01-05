@@ -1,2 +1,2 @@
 # gnucash.AppImage
-AppImage build for gnucash
+AppImage build for [gnucash](https://github.com/gnucash/gnucash)
