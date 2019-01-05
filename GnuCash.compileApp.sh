@@ -45,6 +45,9 @@ echo "=> copy GUILE"
 cp --recursive --verbose /usr/share/guile "${APPDIR}/usr/share"
 cp --recursive --verbose /usr/lib/x86_64-linux-gnu/guile "${APPDIR}/usr/lib"
 
+echo "=> copy SQLITE"
+cp --recursive --verbose /usr/lib/x86_64-linux-gnu/dbd "${APPDIR}/usr/lib"
+
 #=== Create AppRun main program
 
 cat << EOF > ${APPDIR}/AppRun
