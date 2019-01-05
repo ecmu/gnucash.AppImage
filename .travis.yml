@@ -20,6 +20,7 @@ addons:
       - libdbd-sqlite3
       - libsecret-1-dev
       - guile-2.0-dev
+      - libboost-all-dev
  
 before_script:
   - export APP=Gnucash
