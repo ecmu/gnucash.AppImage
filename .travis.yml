@@ -1,4 +1,3 @@
-# geany use both C and C++, so advertize C++
 language: cpp
 dist: xenial
 #sudo: required
@@ -23,7 +22,7 @@ addons:
       - libboost-all-dev
  
 before_script:
-  - export APP=Gnucash
+  - export APP=GnuCash
   - export LOWERAPP=${APP,,}
   - export APPDIR="$(pwd)/appdir" ; mkdir --parents ${APPDIR} ; find ${APPDIR}
 
