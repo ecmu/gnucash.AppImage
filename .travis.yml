@@ -1,5 +1,5 @@
 language: cpp
-dist: trusty
+dist: xenial
 #sudo: required
 compiler:
   - gcc
@@ -10,18 +10,16 @@ git:
 addons:
   apt:
     packages:
-      #- libxml++2-dev
-      #- libxslt1-dev
-      #- libwebkit2gtk-4.0-dev
-      - libwebkit2gtk-3.0-dev
+      - libxml++2-dev
+      - libxslt1-dev
+      - libwebkit2gtk-4.0-dev
       - libofx-dev
       - xsltproc
-      #- libdbi-dev
+      - libdbi-dev
       - libdbd-sqlite3
       - libsecret-1-dev
       - guile-2.0-dev
       - libboost-all-dev
-      #git bash-completion cmake3 make swig  texinfo ninja-build libgtk-3-dev 
  
 before_script:
   - export APP=GnuCash
