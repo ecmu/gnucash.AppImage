@@ -1,6 +1,5 @@
 language: cpp
 dist: xenial
-#sudo: required
 compiler:
   - gcc
 
