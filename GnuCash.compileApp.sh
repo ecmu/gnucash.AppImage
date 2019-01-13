@@ -48,6 +48,9 @@ cp --recursive --verbose /usr/lib/x86_64-linux-gnu/guile "${APPDIR}/usr/lib"
 echo "=> copy SQLITE"
 cp --recursive --verbose /usr/lib/x86_64-linux-gnu/dbd "${APPDIR}/usr/lib"
 
+echo "=> copy LIBOFX dependencies"
+cp --recursive --verbose /usr/share/libofx6 "${APPDIR}/usr/share"
+
 #=== Create AppRun main program
 
 cat << EOF > ${APPDIR}/AppRun
