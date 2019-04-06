@@ -10,7 +10,7 @@
 
 #=== Get App source
 
-URL=$(wget --quiet "https://github.com/Gnucash/gnucash/releases" -O - | grep -e "gnucash-.*\.tar\.gz" | head -n 1 | cut -d '"' -f 2)
+URL=$(wget --quiet "https://github.com/Gnucash/gnucash/releases" -O - | grep -e "href=.*gnucash-.*\.tar\.gz" | head -n 1 | cut -d '"' -f 2)
 wget --continue "https://github.com${URL}"
 tar xf gnucash-*.tar.gz
 
