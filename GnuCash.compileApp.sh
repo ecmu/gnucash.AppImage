@@ -8,12 +8,6 @@
 #set -x
 #set -e
 
-#=== Get App source
-
-URL=$(wget --quiet "https://github.com/Gnucash/gnucash/releases" -O - | grep -e "href=.*gnucash-.*\.tar\.gz" | head -n 1 | cut -d '"' -f 2)
-wget --continue "https://github.com${URL}"
-tar xf gnucash-*.tar.gz
-
 #=== Compile googletest
 
 git clone https://github.com/google/googletest.git
@@ -39,7 +33,9 @@ cmake -DWITH_OFX=ON -DWITH_AQBANKING=OFF -DCMAKE_INSTALL_PREFIX="${APPDIR}/usr" 
 make
 make install
 
-#=== Copy extra shared libraries that are not copied by linuxdeploy later
+echo ""
+echo "=== Copy extra shared libraries that are not copied by linuxdeploy later"
+echo ""
 
 echo "=> copy GUILE"
 cp --recursive --verbose /usr/share/guile "${APPDIR}/usr/share"
@@ -51,7 +47,9 @@ cp --recursive --verbose /usr/lib/x86_64-linux-gnu/dbd "${APPDIR}/usr/lib"
 echo "=> copy LIBOFX dependencies"
 cp --recursive --verbose /usr/share/libofx6 "${APPDIR}/usr/share"
 
-#=== Create AppRun main program
+echo ""
+echo "=== Create AppRun main program"
+echo ""
 
 cat << EOF > ${APPDIR}/AppRun
 #!/usr/bin/env bash

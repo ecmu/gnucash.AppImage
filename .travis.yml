@@ -26,10 +26,19 @@ before_script:
   - export APPDIR="$(pwd)/appdir" ; mkdir --parents ${APPDIR} ; find ${APPDIR}
 
 script:
-  #Compile:
+  #=== Get App sources:
+  - echo "TRAVIS_TAG = ${TRAVIS_TAG}"
+  - if [ -z "${TRAVIS_TAG}"]; then
+      GITHUB_REST=$(curl https://api.github.com/repos/GnuCash/gnucash/releases/latest)
+    else
+      GITHUB_REST=$(curl https://api.github.com/repos/GnuCash/gnucash/releases/tags/${TRAVIS_TAG})
+    fi
+  - wget --continue $(echo ${GITHUB_REST} | ./jq-linux64 ".assets | map(select(.content_type == \"application/gzip\"))[0].browser_download_url")
+  - tar xf gnucash-*.tar.gz
+  #=== Compile:
   - bash ./${APP}.compileApp.sh
   - export VERSION=$(ls gnucash-*.tar.gz | sed -r 's/.*gnucash-(.*).tar.gz/\1/')
-  #Build AppImage:
+  - #Build AppImage:
   - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
   - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
   - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
