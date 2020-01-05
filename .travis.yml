@@ -28,7 +28,7 @@ before_script:
 script:
   #=== Get App sources:
   - echo "TRAVIS_TAG = ${TRAVIS_TAG}"
-  - if [ -z "${TRAVIS_TAG}"]; then
+  - if [ -z "${TRAVIS_TAG}" ]; then
       GITHUB_REST=$(curl https://api.github.com/repos/GnuCash/gnucash/releases/latest)
     else
       GITHUB_REST=$(curl https://api.github.com/repos/GnuCash/gnucash/releases/tags/${TRAVIS_TAG})
