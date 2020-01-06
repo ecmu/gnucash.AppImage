@@ -24,6 +24,7 @@ before_script:
   - export APP=GnuCash
   - export LOWERAPP=${APP,,}
   - export APPDIR="$(pwd)/appdir" ; mkdir --parents ${APPDIR} ; find ${APPDIR}
+  - set -e
 
 script:
   #=== Get App sources:
