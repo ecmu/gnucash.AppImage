@@ -37,11 +37,11 @@ script:
   #=== Compile:
   - bash ./${APP}.compileApp.sh
   - export VERSION=$(ls gnucash-*.tar.gz | sed -r 's/.*gnucash-(.*).tar.gz/\1/')
-  - #Build AppImage:
+  - echo "VERSION = ${VERSION}"
+  #=== Build AppImage:
   - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
   - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
   - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
-  #- export VERSION=$(git rev-parse --short HEAD) # linuxdeployqt uses this for naming the file
   - ./linuxdeployqt-continuous-x86_64.AppImage ${APPDIR}/usr/share/applications/*.desktop -appimage -unsupported-allow-new-glibc
 
 after_success:
