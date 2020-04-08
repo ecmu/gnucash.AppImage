@@ -5,18 +5,13 @@
 #LOWERAPP=${APP,,} 
 #APPDIR=$(readlink -f appdir)
 
-#set -x
-#set -e
-
 #=== Compile googletest
 
 git clone https://github.com/google/googletest.git
-pushd googletest
-mkdir mybuild
-pushd mybuild
+mkdir --parents googletest/mybuild
+pushd googletest/mybuild
 cmake -DBUILD_GMOCK=ON ..       #building gmock builds gtest by default
 make                            # build the static libraries
-popd
 popd
 
 # the following commands will create environment variables which if set and installed shared or static libraries are not detected will allow CMake to locate the sources and compile them into the prject build.
@@ -62,49 +57,8 @@ echo "HERE = \${HERE}"
 
 #=======================================================================
 
-APP_STOP_NOW="false"
-
-#APP_HOME="\${ARGV0}.home"
-#echo "APP_HOME = \${APP_HOME}"
-#if [ -d \${APP_HOME} ]; then
-#  echo "  => directory exists : \${APP_HOME}"
-#else
-#  APP_STOP_NOW="true"
-#  if [ -d "\${HERE}/${APP}.home" ]; then
-#    echo "  => link : \${APP_HOME} => \${HERE}/${APP}.home"
-#    ln -s "${APP}.home" "\${APP_HOME}"
-#  else
-#    echo "  => create local home directory"
-#    exec "${ARGV0}" --appimage-portable-home
-#  fi  
-#fi
-
-#APP_CONFIG="\${ARGV0}.config"
-#echo "APP_CONFIG = \${APP_CONFIG}"
-#if [ -d \${APP_CONFIG} ]; then
-#  echo "  => directory exists : \${APP_CONFIG}"
-#else
-#  APP_STOP_NOW="true"
-#  if [ -d "\${HERE}/${APP}.config" ]; then
-#    echo "  => link : \${APP_CONFIG} => \${HERE}/${APP}.config"
-#    ln -s "${APP}.config" "\${APP_CONFIG}"
-#  else
-#    echo "  => create local config directory"
-#    exec "${ARGV0}" --appimage-portable-config
-#  fi  
-#fi
-
-#if [ "\${APP_CONFIG}" == "true" ]; then
-#  echo
-#  echo "=> Relancer l'AppImage pour prendre en compte les nouveaux répertoires HOME et CONFIG..."
-#  echo
-#  exit
-#fi
-
-#=======================================================================
-
 export GNC_DBD_DIR="\${APPDIR}/usr/lib/dbd"
-export LD_LIBRARY_PATH="\${APPDIR}/usr/lib:\${APPDIR}/usr/lib/gnucash:\$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="\${APPDIR}/usr/lib:\${APPDIR}/usr/lib/gnucash:\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 export OFX_DTD_PATH="\${APPDIR}/usr/share/libofx6/libofx/dtd"
 
 echo "PATH = \${PATH}"
