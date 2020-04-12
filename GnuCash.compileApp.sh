@@ -1,9 +1,10 @@
 #! /bin/bash
 
 #Global variables set by caller
+#TRAVIS_BUILD_DIR=$(dirname $(realpath $([ "${BASH_SOURCE}" == "" ] && echo "$(pwd)/dummyFileName" || ([ "${BASH_SOURCE::1}" == "/" ] && echo "$BASH_SOURCE" || echo "$(pwd)/$BASH_SOURCE"))))
 #APP=Gnucash
 #LOWERAPP=${APP,,} 
-#APPDIR=$(readlink -f appdir)
+#APPDIR="$TRAVIS_BUILD_DIR/AppDir"
 
 #=== Compile googletest
 
@@ -16,8 +17,8 @@ popd
 
 # the following commands will create environment variables which if set and installed shared or static libraries are not detected will allow CMake to locate the sources and compile them into the prject build.
 # These environment variables can be made permanent by copying these commands into $HOME/.profile
-export GTEST_ROOT=$(pwd)/googletest/googletest
-export GMOCK_ROOT=$(pwd)/googletest/googlemock
+export GTEST_ROOT=$TRAVIS_BUILD_DIR/googletest/googletest
+export GMOCK_ROOT=$TRAVIS_BUILD_DIR/googletest/googlemock
 
 #=== Compile gnucash
 
