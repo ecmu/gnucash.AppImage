@@ -23,8 +23,8 @@ addons:
 before_script:
   - export APP=GnuCash
   - export LOWERAPP=${APP,,}
-  - export APPDIR="$(pwd)/appdir" ; mkdir --parents ${APPDIR} ; find ${APPDIR}
-  #- set -e
+  - export APPDIR="$TRAVIS_BUILD_DIR/AppDir"
+  - mkdir --parents ${APPDIR}/usr
 
 script:
   #=== Get App sources:
@@ -32,14 +32,15 @@ script:
   - echo "TRAVIS_TAG = ${TRAVIS_TAG}"
   - GITHUB_RELEASE=$([ -z "${TRAVIS_TAG}" ] && echo "latest" || echo "tags/${TRAVIS_TAG}")
   - GITHUB_REST=$(curl https://api.github.com/repos/GnuCash/gnucash/releases/${GITHUB_RELEASE})
-  - wget --continue $(echo "${GITHUB_REST}" | ./jq-linux64 ".assets | map(select(.content_type == \"application/gzip\"))[0].browser_download_url" | sed s/\"//g)
+  - wget --quiet $(echo "${GITHUB_REST}" | ./jq-linux64 ".assets | map(select(.content_type == \"application/gzip\"))[0].browser_download_url" | sed s/\"//g)
   - tar xf gnucash-*.tar.gz
   #=== Compile:
   - bash ./${APP}.compileApp.sh
   - export VERSION=$(ls gnucash-*.tar.gz | sed -r 's/.*gnucash-(.*).tar.gz/\1/')
   - echo "VERSION = ${VERSION}"
+  - tar -czf $APP_AppDir.tar.gz $APPDIR
   #=== Build AppImage:
-  - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+  - wget --quiet https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
   - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
   - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
   - ./linuxdeployqt-continuous-x86_64.AppImage ${APPDIR}/usr/share/applications/*.desktop -appimage
@@ -48,7 +49,8 @@ after_success:
   - find ${APPDIR} -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - bash upload.sh ${APP}*.AppImage*
-  
+  - bash upload.sh $APP_AppDir.tar.gz
+
 branches:
   except:
     - # Do not build tags that we create when we upload to GitHub Releases
