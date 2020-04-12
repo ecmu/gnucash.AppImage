@@ -38,7 +38,7 @@ script:
   - bash ./${APP}.compileApp.sh
   - export VERSION=$(ls gnucash-*.tar.gz | sed -r 's/.*gnucash-(.*).tar.gz/\1/')
   - echo "VERSION = ${VERSION}"
-  - tar -czf $APP_AppDir.tar.gz $APPDIR
+  - tar -czf ${APP}_AppDir.tar.gz $APPDIR
   #=== Build AppImage:
   - wget --quiet https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
   - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
@@ -49,7 +49,7 @@ after_success:
   - find ${APPDIR} -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - bash upload.sh ${APP}*.AppImage*
-  - bash upload.sh $APP_AppDir.tar.gz
+  - bash upload.sh ${APP}_AppDir.tar.gz
 
 branches:
   except:
