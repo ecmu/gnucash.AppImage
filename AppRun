@@ -45,6 +45,6 @@ export GUILE_LOAD_COMPILED_PATH="${APPDIR}/usr/lib/guile/2.2/ccache${GUILE_LOAD_
 
 export GNC_DBD_DIR="${APPDIR}/usr/lib/dbd"
 export LD_LIBRARY_PATH="${APPDIR}/usr/lib:${APPDIR}/usr/lib/gnucash${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-export OFX_DTD_PATH="${APPDIR}/usr/share/libofx6/libofx/dtd"
+export OFX_DTD_PATH="${APPDIR}/usr/share/libofx7/libofx/dtd"
 
 exec "${APPDIR}/usr/bin/gnucash" "$@"
