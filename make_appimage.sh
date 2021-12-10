@@ -2,8 +2,14 @@
 set -x #echo on
 set -e #Exists on errors
 
-#TODO : get version from github tag
-export VERSION=4.8
+if [ "$GITHUB_REF_NAME" = "" ];
+then
+	echo "Please define tag for this release"
+	exit 1
+fi
+
+#Get App version from tag, excluding suffixe "-Revision" only for AppImage build...
+export VERSION=$(echo $GITHUB_REF_NAME | cut -d'-' -f1)
 
 SCRIPTPATH=.
 SCRIPTPATH=$(dirname $(readlink -f $0))
