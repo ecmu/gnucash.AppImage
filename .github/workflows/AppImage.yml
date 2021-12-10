@@ -25,7 +25,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         allowUpdates: True
-        tag: ${{ env.GITHUB_REF_NAME }}
-        name: "Release build (${{ env.GITHUB_REF_NAME }})"
+        tag: ${{ github.ref_name }}
+        name: "Release build (${{ github.ref_name }})"
         artifacts: "GnuCash*.AppImage"
         token: ${{ secrets.GITHUB_TOKEN }}
