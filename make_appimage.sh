@@ -42,9 +42,10 @@ if [ ! -d "./${LOWERAPP}-${VERSION}" ];
 then
   tar xf "./${LOWERAPP}-${VERSION}.tar.gz"
 
-  #Workaround for failing build... Weird since test-ci.yml on github is OK...
-  #  diff -u gnucash-4.8/gnucash/gschemas/CMakeLists.txt gnucash-4.8-patched/gnucash/gschemas/CMakeLists.txt >CMakeLists.patch
-  patch --input=./CMakeLists.patch "./gnucash-${VERSION}/gnucash/gschemas/CMakeLists.txt"
+  #obsolete since v4.9
+  # #Workaround for failing build... Weird since test-ci.yml on github is OK...
+  # #  diff -u gnucash-4.8/gnucash/gschemas/CMakeLists.txt gnucash-4.8-patched/gnucash/gschemas/CMakeLists.txt >CMakeLists.patch
+  # patch --input=./CMakeLists.patch "./gnucash-${VERSION}/gnucash/gschemas/CMakeLists.txt"
 fi
 
 #=== Compile main App
