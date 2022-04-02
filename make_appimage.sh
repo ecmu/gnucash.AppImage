@@ -2,15 +2,6 @@
 set -x #echo on
 set -e #Exists on errors
 
-if [ "$GITHUB_REF_NAME" = "" ];
-then
-	echo "Please define tag for this release"
-	exit 1
-fi
-
-#Get App version from tag, excluding suffixe "-Revision" only for AppImage build...
-export VERSION=$(echo $GITHUB_REF_NAME | cut -d'-' -f1)
-
 SCRIPTPATH=.
 SCRIPTPATH=$(dirname $(readlink -f $0))
 SCRIPTPATH=${SCRIPTPATH%/}
@@ -21,6 +12,20 @@ pushd ${SCRIPTPATH}
 export APP=GnuCash
 export LOWERAPP=gnucash
 export APPDIR="${SCRIPTPATH}/appdir"
+
+if [ -f "./env" ];
+then
+  . ./env
+fi
+
+if [ "$GITHUB_REF_NAME" = "" ];
+then
+	echo "Please define tag for this release"
+	exit 1
+fi
+
+#Get App version from tag, excluding suffixe "-Revision" only for AppImage build...
+export VERSION=$(echo $GITHUB_REF_NAME | cut -d'-' -f1)
 
 #=== AppDir
 
