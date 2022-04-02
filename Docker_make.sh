@@ -7,6 +7,8 @@ SCRIPTPATH=.
 SCRIPTPATH=$(dirname $(readlink -f $0))
 #SCRIPTPATH=${SCRIPTPATH%/}
 
+pushd "$SCRIPTPATH"
+
 if [ "$DOCKER_RESET" == "1" ] || [ "$(docker image ls ${DOCKER_IMAGE_NAME} | grep ${DOCKER_IMAGE_NAME})" == "" ]
 then
   echo "Deleting existing container '${DOCKER_IMAGE_NAME}'..."
@@ -25,3 +27,5 @@ else
   echo "Running existing ${DOCKER_IMAGE_NAME} container..."
   docker start --attach ${DOCKER_IMAGE_NAME}
 fi
+
+popd
