@@ -17,10 +17,10 @@ jobs:
   
     - name: Install build environment (same as Dockerfile)
       run: |
-				sudo -i
-				apt-get update
-				apt-get install --yes apt-utils
-				DEBIAN_FRONTEND=noninteractive apt-get install --yes wget locales appstream build-essential cmake pkg-config
+        sudo -i
+        apt-get update
+        apt-get install --yes apt-utils
+        DEBIAN_FRONTEND=noninteractive apt-get install --yes wget locales appstream build-essential cmake pkg-config
   
     - name: Executing AppImage build
       run: bash ./make_appimage.sh
