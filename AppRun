@@ -1,16 +1,10 @@
-#! /bin/bash
-# Copyright 2020 Alex Woroschilow (alex.woroschilow@gmail.com)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#set -ex
+#!/usr/bin/env bash
+#set -x #echo on
+#set -e #Exists on errors
+
+export APPDIR="${APPDIR:-"$(dirname "$(realpath "$0")")"}" # Workaround to run extracted AppImage
+export PATH="${APPDIR}/usr/bin":$PATH
+#echo "PATH=$PATH"
 
 #=== From linuxdeploy-plugin-gtk.sh
 
@@ -18,7 +12,8 @@ gsettings get org.gnome.desktop.interface gtk-theme 2> /dev/null | grep -qi "dar
 APPIMAGE_GTK_THEME="${APPIMAGE_GTK_THEME:-"Adwaita:$GTK_THEME_VARIANT"}" # Allow user to override theme (discouraged)
 CACHEDIR="$(mktemp --tmpdir --directory .AppRun.XXXXXXXX)"
 
-export APPDIR="${APPDIR:-"$(dirname "$(realpath "$0")")"}" # Workaround to run extracted AppImage
+#export APPDIR="${APPDIR:-"$(dirname "$(realpath "$0")")"}" # Workaround to run extracted AppImage
+
 export GTK_DATA_PREFIX="$APPDIR"
 export GTK_THEME="$APPIMAGE_GTK_THEME" # Custom themes are broken
 export GDK_BACKEND=x11 # Crash with Wayland backend on Wayland
@@ -34,17 +29,18 @@ sed "s|/usr/lib/x86_64-linux-gnu/gtk-3.0|$APPDIR/usr/lib/x86_64-linux-gnu/gtk-3.
 
 export GDK_PIXBUF_MODULEDIR="$APPDIR/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders"
 export GDK_PIXBUF_MODULE_FILE="$CACHEDIR/loaders.cache"
-sed "s|/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders|$APPDIR/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders|g" "$APPDIR/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache" > "$GDK_PIXBUF_MODULE_FILE"
+#sed "s|/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders|$APPDIR/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders|g" "$APPDIR/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache" > "$GDK_PIXBUF_MODULE_FILE"
+$APPDIR/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders --update-cache 
 
 #=======================================================================
 
-#export GUILE_AUTO_COMPILE=0
-export GUILE_LOAD_COMPILED_PATH="${APPDIR}/usr/lib/guile/2.2/ccache${GUILE_LOAD_COMPILED_PATH:+:$GUILE_LOAD_COMPILED_PATH}"
-#export GUILE_LOAD_COMPILED_PATH="${APPDIR}/usr/lib/x86_64-linux-gnu/guile/2.2/site-ccache/gnucash${GUILE_LOAD_COMPILED_PATH:+:$GUILE_LOAD_COMPILED_PATH}"
-#  => Note : cela est complété automatiquement avec "usr/etc/gnucash/environment" => à revoir très certainement dans la construction de l'AppImage...
+export LD_LIBRARY_PATH="${APPDIR}/usr/lib:${APPDIR}/usr/lib/x86_64-linux-gnu:${APPDIR}/usr/lib/gnucash${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+#echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
-export GNC_DBD_DIR="${APPDIR}/usr/lib/dbd"
-export LD_LIBRARY_PATH="${APPDIR}/usr/lib:${APPDIR}/usr/lib/gnucash${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export PYTHONPATH="${APPDIR}/usr/lib/python3.8/site-packages${PYTHONPATH:+:$PYTHONPATH}"
 export OFX_DTD_PATH="${APPDIR}/usr/share/libofx7/libofx/dtd"
+
+export GNC_DBD_DIR="${APPDIR}/usr/lib/x86_64-linux-gnu/dbd"
+#export GNC_DEBUG=yes
 
 exec "${APPDIR}/usr/bin/gnucash" "$@"
