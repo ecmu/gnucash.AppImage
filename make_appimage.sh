@@ -97,6 +97,7 @@ then
 	#Initial source = gnucash package description for ubuntu 20.04 LTS (https://packages.ubuntu.com/jammy/gnucash)
 	#Multiple libraries added...
   apt-get download guile-3.0 guile-3.0-libs libaqbanking44 libboost-filesystem1.71.0 libboost-locale1.71.0 libboost-program-options1.71.0 libboost-regex1.71.0 libcairo2 libcrypt-ssleay-perl libdate-manip-perl libdbd-sqlite3 libdbi1 libfinance-quote-perl libjavascriptcoregtk-4.0-18 libgdk-pixbuf2.0-0 libgtk-3-0 libgwengui-gtk3-0 libgwenhywfar79 libharfbuzz-icu0 libhtml-tableextract-perl libhtml-tree-perl libicu66 libkeyutils1 libofx7 libpango-1.0-0  libpangoft2-1.0-0 libpangocairo-1.0-0 libpython3.8 libsecret-1-0 libwebkit2gtk-4.0-37 libwww-perl libxml2 perl zlib1g
+  apt-get download libosp5
 
   for f in $(ls *.deb); do dpkg-deb -x ./$f "${APP_DEPDIR}/appdir/"; done
   cp --recursive --remove-destination appdir/lib/   appdir/usr/ && rm --recursive appdir/lib
