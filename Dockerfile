@@ -10,4 +10,4 @@ FROM ubuntu:focal
 # appstream is used by AppImageTool
 RUN apt-get update \
 && apt-get install --yes apt-utils \
-&& DEBIAN_FRONTEND=noninteractive apt-get install --yes wget locales appstream build-essential cmake pkg-config
+&& DEBIAN_FRONTEND=noninteractive apt-get install --yes sudo wget locales appstream build-essential cmake pkg-config
