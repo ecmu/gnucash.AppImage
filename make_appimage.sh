@@ -9,7 +9,7 @@ echo "SCRIPTPATH = $SCRIPTPATH"
 pushd ${SCRIPTPATH}
 
 export APP=GnuCash
-export LOWERAPP=gnucash
+export LOWERAPP=${APP,,}
 export APPDIR="${SCRIPTPATH}/appdir"
 
 #=== Define GnuCash version to build
@@ -43,7 +43,7 @@ fi
 
 if [ ! -d "./${LOWERAPP}-${VERSION}" ];
 then
-  tar xf "./${LOWERAPP}-${VERSION}.tar.gz"
+  tar --extract --file="./${LOWERAPP}-${VERSION}.tar.gz"
 fi
 
 #=== Compile main App
@@ -60,10 +60,6 @@ then
   #  export TZ='America/Los_Angeles' #'Europe/Paris'
   #fi
 
-  #cmake -G Ninja -DWITH_PYTHON=ON -DCMAKE_INSTALL_PREFIX=$APPDIR/usr "../${LOWERAPP}-${VERSION}/"
-  #ninja
-  ##ninja check  # => des tests échouent, je ne sais pas pourquoi, et pour l'instant, je m'en fiche...
-
   cmake -DWITH_PYTHON=ON -DCMAKE_INSTALL_PREFIX=$APPDIR/usr "../${LOWERAPP}-${VERSION}/"
   make -j$(nproc)
 
@@ -77,7 +73,6 @@ then
   mkdir --parents "${APPDIR}"
 
   pushd "${APP_BuildDir}"
-  #ninja install
   make install
 
   popd
@@ -88,40 +83,67 @@ fi
 APP_DEPDIR="${SCRIPTPATH}/${LOWERAPP}-dependencies"
 
 #Get dependencies packages for runtime (I couldn't use linuxdeploy as I wanted so this is workaround in order to use AppImageTool directly...)
-if [ ! -d "${APP_DEPDIR}" ];
-then
-  echo "Downloading gnucash dependencies packages..."
+if [ ! -d "${APP_DEPDIR}" ]; then
   mkdir --parents "${APP_DEPDIR}"
-  pushd "${APP_DEPDIR}"
-  
-	#Initial source = gnucash package description for ubuntu 20.04 LTS (https://packages.ubuntu.com/jammy/gnucash)
-	#Multiple libraries added...
-  apt-get download guile-3.0 guile-3.0-libs libaqbanking44 libboost-filesystem1.71.0 libboost-locale1.71.0 libboost-program-options1.71.0 libboost-regex1.71.0 libcairo2 libcrypt-ssleay-perl libdate-manip-perl libdbd-sqlite3 libdbi1 libfinance-quote-perl libjavascriptcoregtk-4.0-18 libgdk-pixbuf2.0-0 libgtk-3-0 libgwengui-gtk3-0 libgwenhywfar79 libharfbuzz-icu0 libhtml-tableextract-perl libhtml-tree-perl libicu66 libkeyutils1 libofx7 libpango-1.0-0  libpangoft2-1.0-0 libpangocairo-1.0-0 libpython3.8 libsecret-1-0 libwebkit2gtk-4.0-37 libwww-perl libxml2 perl zlib1g
-  apt-get download libosp5
+fi
 
-  for f in $(ls *.deb); do dpkg-deb -x ./$f "${APP_DEPDIR}/appdir/"; done
-  cp --recursive --remove-destination appdir/lib/   appdir/usr/ && rm --recursive appdir/lib
-  cp --recursive --remove-destination appdir/lib64/ appdir/usr/ && rm --recursive appdir/lib64
- 
-	#Some missing elements:
-	if [ ! -f "${APP_DEPDIR}/appdir/usr/bin/guile"];
-	then
-		pushd "${APP_DEPDIR}/appdir/usr/bin"
-		ln --symbolic ../lib/x86_64-linux-gnu/guile-2.2/bin/guile
-		popd
-	fi
- 
+pushd "${APP_DEPDIR}"
+
+#Downloading gnucash dependencies packages...
+#Initial source = gnucash package description for ubuntu 20.04 LTS (https://packages.ubuntu.com/jammy/gnucash)
+#Multiple libraries added...
+apt-get download guile-3.0 guile-3.0-libs libaqbanking44 libboost-filesystem1.71.0 libboost-locale1.71.0 libboost-program-options1.71.0 libboost-regex1.71.0 libcairo2 libcrypt-ssleay-perl libdate-manip-perl libdbd-sqlite3 libdbi1 libfinance-quote-perl libjavascriptcoregtk-4.0-18 libgdk-pixbuf2.0-0 libgtk-3-0 libgwengui-gtk3-0 libgwenhywfar79 libharfbuzz-icu0 libhtml-tableextract-perl libhtml-tree-perl libicu66 libkeyutils1 libofx7 libpango-1.0-0  libpangoft2-1.0-0 libpangocairo-1.0-0 libsecret-1-0 libwebkit2gtk-4.0-37 libwww-perl libxml2 perl zlib1g
+apt-get download libosp5 libffi7 libboost-thread1.71.0 libboost-date-time1.71.0 libwebp6
+
+#Extracting gnucash dependencies packages...
+for f in $(ls *.deb); do dpkg-deb -x ./$f "${APP_DEPDIR}/appdir/"; done
+cp --recursive --remove-destination appdir/lib/   appdir/usr/ && rm --recursive appdir/lib
+cp --recursive --remove-destination appdir/lib64/ appdir/usr/ && rm --recursive appdir/lib64
+
+#Some missing elements:
+if [ ! -f "${APP_DEPDIR}/appdir/usr/bin/guile" ]; then
+	pushd "${APP_DEPDIR}/appdir/usr/bin"
+	ln --symbolic guile-3.0 guile
+	popd
+fi
+
+popd
+
+#Copying dependent libraries..."
+cp --preserve --recursive "${APP_DEPDIR}"/appdir "${SCRIPTPATH}"
+
+#=== Add python
+
+PYTHON_VERSION=3.10.7
+PYTHON_ZIP=python_binaries-${PYTHON_VERSION}.tar.gz
+
+if [ ! -f "${SCRIPTPATH}/${PYTHON_ZIP}" ];
+then
+  wget --continue "https://github.com/ecmu/Python-linux-binaries/releases/download/${PYTHON_VERSION}/${PYTHON_ZIP}"
+fi
+
+#if [ -h "${APPDIR}/usr/lib/python3.8/_sysconfigdata__linux_x86_64-linux-gnu.py" ]; then
+#	rm "${APPDIR}/usr/lib/python3.8/_sysconfigdata__linux_x86_64-linux-gnu.py"
+#fi
+
+tar --directory="${APPDIR}/usr" --extract --file="${SCRIPTPATH}/${PYTHON_ZIP}"
+
+if [ ! -h "${APPDIR}/usr/bin/python" ]; then
+  pushd "${APPDIR}/usr/bin"
+  ln --symbolic python3 python
   popd
 fi
 
-echo "Copying dependent libraries..."
-cp --preserve --recursive "${APP_DEPDIR}/appdir" "${SCRIPTPATH}"
+#TODO: set complete python environment for these installs...
+#PyGObject == 'gi' module used in GnuCash
+#export PATH=${APPDIR}/usr/bin:$PATH
+#python3 -m pip install PyGObject
 
 #=== Complete AppDir (useful here for execution tests directly from AppDir)
 
 pushd ${APPDIR}
 
-cp --preserve ${SCRIPTPATH}/AppRun .
+cp --preserve "${SCRIPTPATH}"/AppRun .
 chmod +x ./AppRun
 
 if [ ! -f ./gnucash.desktop ];
@@ -144,6 +166,7 @@ then
 	chmod a+x appimagetool-x86_64.AppImage
 fi
 
+export VERSION=$GITHUB_REF_NAME
 ARCH=x86_64 ./appimagetool-x86_64.AppImage --appimage-extract-and-run --no-appstream --verbose "${APPDIR}"
 
 #===
