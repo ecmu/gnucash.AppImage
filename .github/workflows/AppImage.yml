@@ -31,5 +31,6 @@ jobs:
         allowUpdates: True
         tag: ${{ github.ref_name }}
         name: "Release build (${{ github.ref_name }})"
+        omitBody: True
         artifacts: "*.AppImage"
         token: ${{ secrets.GITHUB_TOKEN }}
