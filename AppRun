@@ -37,7 +37,6 @@ $APPDIR/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders --updat
 export LD_LIBRARY_PATH="${APPDIR}/usr/lib:${APPDIR}/usr/lib/x86_64-linux-gnu:${APPDIR}/usr/lib/gnucash${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 #echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
-export PYTHONHOME="${APPDIR}/usr"
 export OFX_DTD_PATH="${APPDIR}/usr/share/libofx7/libofx/dtd"
 export GNC_DBD_DIR="${APPDIR}/usr/lib/x86_64-linux-gnu/dbd"
 
