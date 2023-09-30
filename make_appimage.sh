@@ -75,7 +75,7 @@ export LD_LIBRARY_PATH="${APPDIR}/usr"/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 
 if [ ! -f "./${LOWERAPP}-${VERSION}.tar.gz" ];
 then
-  wget --continue "https://github.com/gnucash/gnucash/releases/download/${VERSION}/${LOWERAPP}-${VERSION}.tar.gz" --output-document="${LOWERAPP}-${VERSION}.tar.gz"
+  wget --continue "https://github.com/Gnucash/gnucash/archive/refs/tags/${VERSION}.tar.gz" --output-document="${LOWERAPP}-${VERSION}.tar.gz"
   rm --recursive --force "./${LOWERAPP}-${VERSION}"
 fi
 
