@@ -14,7 +14,7 @@ export APPDIR="${SCRIPTPATH}/appdir"
 
 #=== Dependencies versions
 
-PYTHON_VERSION=3.12.0
+PYTHON_VERSION=3.11.4
 JQ_VERSION=1.7
 
 #=== Define App version to build
