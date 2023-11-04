@@ -12,6 +12,11 @@ export APP=GnuCash
 export LOWERAPP=${APP,,}
 export APPDIR="${SCRIPTPATH}/appdir"
 
+#=== Dependencies versions
+
+PYTHON_VERSION=3.12.0
+JQ_VERSION=1.7
+
 #=== Define App version to build
 
 #Workaround for build outside github: "env" file should then contain exports of github variables.
@@ -38,7 +43,6 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes patchelf librsvg2-dev 
 
 #=== Add python
 
-PYTHON_VERSION=3.10.11
 PYTHON_ZIP=python_binaries-${PYTHON_VERSION}.tar.gz
 
 if [ ! -f "${SCRIPTPATH}/${PYTHON_ZIP}" ];
@@ -71,11 +75,23 @@ export LD_LIBRARY_PATH="${APPDIR}/usr"/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 # apt download python3-gi
 # dpkg-deb --extract python3-gi_3.42.1-0ubuntu1_amd64.deb ./appdir/
 
+#=== Add JQ (JSON parser)
+
+JQ_BIN=${SCRIPTPATH}/jq-linux64
+
+if [ ! -f "${JQ_BIN}" ];
+then
+  wget --continue "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux64"
+  chmod +x "${JQ_BIN}"
+fi
+
 #=== Get App source
 
 if [ ! -f "./${LOWERAPP}-${VERSION}.tar.gz" ];
 then
-  wget --continue "https://github.com/Gnucash/gnucash/archive/refs/tags/${VERSION}.tar.gz" --output-document="${LOWERAPP}-${VERSION}.tar.gz"
+	JSON=$(wget -q -O - https://api.github.com/repos/Gnucash/gnucash/releases)
+	URL=$(echo $JSON | ./jq-linux64 '.[] | select(.tag_name == env.VERSION) | .assets[] | select(.content_type == "application/gzip" and (.browser_download_url | contains("docs") | not)) | .browser_download_url')
+  wget --continue $(echo $URL | tr -d "'" | tr -d '"') --output-document="${LOWERAPP}-${VERSION}.tar.gz"
   rm --recursive --force "./${LOWERAPP}-${VERSION}"
 fi
 
