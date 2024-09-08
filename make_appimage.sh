@@ -73,7 +73,7 @@ APP_BuildDir="${LOWERAPP}-${VERSION}_build"
 if [ ! -d "${APP_BuildDir}" ];
 then
 	#Force uninstalled:
-  rm --recursive "${APPDIR}"
+  rm --recursive --force "${APPDIR}"
 
   mkdir "${APP_BuildDir}"
   pushd "${APP_BuildDir}"
