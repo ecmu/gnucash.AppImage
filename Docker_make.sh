@@ -8,7 +8,7 @@ DOCKER_RESET=0
 SCRIPTPATH=$(cd $(dirname "$BASH_SOURCE") && pwd)
 pushd "$SCRIPTPATH"
 
-if [ "$DOCKER_RESET" == "1" ] || [ "$(docker image ls ${DOCKER_IMAGE_NAME} | grep ${DOCKER_IMAGE_NAME})" == "" ]
+if [ "$DOCKER_RESET" == "1" ]
 then
   echo "Deleting existing container '${DOCKER_IMAGE_NAME}'..."
   docker stop ${DOCKER_IMAGE_NAME}
@@ -16,7 +16,10 @@ then
 
   echo "Deleting existing image '${DOCKER_IMAGE_NAME}'..."
   docker image rm ${DOCKER_IMAGE_NAME}
-  
+fi
+
+if [ "$(docker image ls ${DOCKER_IMAGE_NAME} | grep ${DOCKER_IMAGE_NAME})" == "" ]
+then
   echo "Building image '${DOCKER_IMAGE_NAME}'..."
   docker build --tag ${DOCKER_IMAGE_NAME} .
 
