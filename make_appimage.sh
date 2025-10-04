@@ -14,12 +14,18 @@ export APPDIR="${SCRIPTPATH}/appdir"
 
 #=== Dependencies versions
 
-PYTHON_VERSION=3.11.4
-JQ_VERSION=1.7
+PYTHON_VERSION=3.13.6
 
-#=== Define App version to build
+#region === Define App version to build
 
 #Workaround for build outside github: "env" file should then contain exports of github variables.
+#Example for "env" file :
+#  #!/usr/bin/env bash
+#  #set -x #echo on
+#  #set -e #Exists on errors
+#
+#  export GITHUB_REF_NAME=5.13
+#  echo GITHUB_REF_NAME=$GITHUB_REF_NAME
 if [ -f "./env" ];
 then
   source ./env
@@ -34,30 +40,20 @@ fi
 #Get App version from tag, excluding suffixe "-Revision" used only for specific AppImage builds...
 export VERSION=$(echo $GITHUB_REF_NAME | cut -d'-' -f1)
 
-#=== Package installations for building
+#endregion
+#region === Package installations for building
 
 # #For gwenhywfar:
 # sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes libgcrypt20-dev libgnutls28-dev libtool-bin
 
 sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes patchelf librsvg2-dev libxslt-dev xsltproc libboost-all-dev libgtk-3-dev guile-3.0-dev libgwengui-gtk3-dev libaqbanking-dev libofx-dev libdbi-dev libdbd-sqlite3 libwebkit2gtk-4.0-dev googletest swig language-pack-en language-pack-fr gettext
 
-#=== Add JQ (JSON parser)
-
-JQ_BIN=${SCRIPTPATH}/jq-linux64
-
-if [ ! -f "${JQ_BIN}" ];
-then
-  wget --continue "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-linux64"
-  chmod +x "${JQ_BIN}"
-fi
-
-#=== Get App source
+#endregion
+#region === Get App source
 
 if [ ! -f "./${LOWERAPP}-${VERSION}.tar.gz" ];
 then
-	JSON=$(wget -q -O - https://api.github.com/repos/Gnucash/gnucash/releases)
-	URL=$(echo $JSON | ./jq-linux64 '.[] | select(.tag_name == env.VERSION) | .assets[] | select(.content_type == "application/gzip" and (.browser_download_url | contains("docs") | not)) | .browser_download_url')
-  wget --continue $(echo $URL | tr -d "'" | tr -d '"') --output-document="${LOWERAPP}-${VERSION}.tar.gz"
+  wget --continue https://github.com/Gnucash/gnucash/archive/refs/tags/${VERSION}.tar.gz --output-document="${LOWERAPP}-${VERSION}.tar.gz"
   rm --recursive --force "./${LOWERAPP}-${VERSION}"
 fi
 
@@ -66,7 +62,8 @@ then
   tar --extract --file="./${LOWERAPP}-${VERSION}.tar.gz"
 fi
 
-#=== Compile main App
+#endregion
+#region === Compile main App
 
 APP_BuildDir="${LOWERAPP}-${VERSION}_build"
 
@@ -89,7 +86,8 @@ then
   popd
 fi
 
-#=== Install main application into AppDir
+#endregion
+#region === Install main application into AppDir
 
 if [ ! -d "${APPDIR}" ];
 then
@@ -131,6 +129,7 @@ then
   popd
 fi
 
+#endregion
 #=== Extra shared libraries from distribution packages
 #Get dependencies packages for runtime (I couldn't use linuxdeploy the way I wanted so this is workaround using AppImageTool directly...)
 
