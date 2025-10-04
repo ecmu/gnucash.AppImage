@@ -63,6 +63,18 @@ jobs:
           git tag -a "$TAG" -m "Release $TAG - Synched with upstream repo"
           git push origin "$TAG"
 
+      - name: Install build environment (same as Dockerfile)
+        if: steps.check_release.outputs.exists == 'false'
+        run: |
+          sudo -i
+          sudo apt-get update
+          sudo apt-get install --yes apt-utils
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes wget locales appstream build-essential cmake pkg-config
+
+      - name: Executing AppImage build
+        run: |
+          bash ./make_appimage.sh
+
       #- name: Create GitHub Release
       #  if: steps.check_release.outputs.exists == 'false'
       #  uses: actions/create-release@v1
@@ -87,16 +99,6 @@ jobs:
 
 
 
-      #- name: Install build environment (same as Dockerfile)
-      #  run: |
-      #    sudo -i
-      #    sudo apt-get update
-      #    sudo apt-get install --yes apt-utils
-      #    sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes wget locales appstream build-essential cmake pkg-config
-
-      #- name: Executing AppImage build
-      #  run: |
-      #    bash ./make_appimage.sh
 
       #- name: Create Release
       #  uses: ncipollo/release-action@v1
