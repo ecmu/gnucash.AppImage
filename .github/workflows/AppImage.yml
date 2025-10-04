@@ -73,6 +73,7 @@ jobs:
 
       - name: Executing AppImage build
         run: |
+          GITHUB_REF_NAME="${{ steps.external_release.outputs.tag }}"
           bash ./make_appimage.sh
 
       #- name: Create GitHub Release
