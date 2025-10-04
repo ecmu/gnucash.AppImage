@@ -73,9 +73,26 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes wget locales appstream build-essential cmake pkg-config
 
       - name: Executing AppImage build
+        if: steps.check_release.outputs.exists == 'false'
         run: |
           GITHUB_REF_NAME="${{ steps.external_release.outputs.tag }}"
           bash ./make_appimage.sh
+
+      - name: Create Release
+        if: steps.check_release.outputs.exists == 'false'
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: True
+          tag: ${{ steps.external_release.outputs.tag }}
+          name: "Release build (${{ steps.external_release.outputs.tag }})"
+          body: |
+            🔄 Release synchronized with Gnucash repository.
+            
+            ---
+            
+            ${{ steps.external_release.outputs.body }}
+          artifacts: "*.AppImage"
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       #- name: Create GitHub Release
       #  if: steps.check_release.outputs.exists == 'false'
