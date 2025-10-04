@@ -20,8 +20,9 @@ jobs:
       # Checks-out this repository under $GITHUB_WORKSPACE, so this job can access it
       - name: Checkout repository
         uses: actions/checkout@v5
-        #with:
-        #  fetch-depth: 0
+        with:
+          #Get full history, with all existing tags
+          fetch-depth: 0
 
       - name: Get latest release from Gnucash repo
         id: external_release
