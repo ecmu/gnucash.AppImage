@@ -1,9 +1,9 @@
 name: Gnucash AppImage Build Synced with upstream Gnucash releases
 on:
-  schedule:
-    # cron format = hour (0-59) / hour (0-23) / days (1-31) / month (1-12) / week day (0-6 / sunday-saturday)
-    # Here = check for new release every day at 3:00am.
-    - cron: '0 3 * * *'
+  #schedule:
+  #  # cron format = hour (0-59) / hour (0-23) / days (1-31) / month (1-12) / week day (0-6 / sunday-saturday)
+  #  # Here = check for new release every day at 3:00am.
+  #  - cron: '0 3 * * *'
   workflow_dispatch:
     # To allaw manual trigger
     inputs:
